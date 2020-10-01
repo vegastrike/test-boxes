@@ -142,6 +142,7 @@ Vagrant.configure("2") do |config|
 			vs_ubuntu_bionic.vm.box = "#{image_ubuntu_bionic}"
 			vs_ubuntu_bionic.vm.network "private_network", ip: "#{base_network_vb}.13"
 			vs_ubuntu_bionic.vm.hostname = "vegastrike-ubuntu-bionic"
+			vs_ubuntu_bionic.vm.boot_timeout = 600
 			vs_ubuntu_bionic.vm.provider "virtualbox" do |vb|
 				vb.memory = "#{base_memory}"
 				vb.cpus = "#{base_cpu_count}"
@@ -152,7 +153,7 @@ Vagrant.configure("2") do |config|
 				apt-get update
 				apt-get install -y ansible python-apt
 				apt-get install -y git
-				apt-get install -y "#{debian_desktop_environment}"
+				apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
 				pushd /home/vagrant
 				if [ ! -d "Assets-Production" ]; then
 				su -c "git clone #{vegastrike_assets_repository}" vagrant
