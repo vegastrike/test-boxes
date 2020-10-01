@@ -18,6 +18,7 @@ base_network_lvt = "172.16.13"
 # VM Hardware Resource Configuration
 base_memory = 3096
 base_cpu_count = 3
+base_vram = 128
 
 # 6-month Ubuntu Release
 image_ubuntu_latest = "ubuntu/groovy64"
@@ -29,9 +30,9 @@ image_ubuntu_bionic = "ubuntu/bionic64"
 
 # Select which system to run by setting it to 'true'
 # Recommended to only operate one at a time.
-system_status_ubuntu_latest = true
-system_status_focal = true
-system_status_xenial = true
+system_status_ubuntu_latest = false
+system_status_focal = false
+system_status_xenial = false
 system_status_bionic = true
 
 # Deskto Environment packages by platform
@@ -54,6 +55,7 @@ Vagrant.configure("2") do |config|
 			vs_ubuntu_latest.vm.provider "virtualbox" do |vb|
 				vb.memory = "#{base_memory}"
 				vb.cpus = "#{base_cpu_count}"
+				vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
 				vb.gui = true
 			end
 			vs_ubuntu_latest.vm.provision "shell", inline: <<-SHELL
@@ -66,7 +68,7 @@ Vagrant.configure("2") do |config|
 				su -c "git clone #{vegastrike_assets_repository}" vagrant
 				else
 				pushd "Assets-Production"
-				su -c "git pull"
+				su -c "git pull" vagrant
 				popd
 				fi
 				popd
@@ -83,6 +85,7 @@ Vagrant.configure("2") do |config|
 			vs_ubuntu_focal.vm.provider "virtualbox" do |vb|
 				vb.memory = "#{base_memory}"
 				vb.cpus = "#{base_cpu_count}"
+				vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
 				vb.gui = true
 			end
 			vs_ubuntu_focal.vm.provision "shell", inline: <<-SHELL
@@ -95,7 +98,7 @@ Vagrant.configure("2") do |config|
 				su -c "git clone #{vegastrike_assets_repository}" vagrant
 				else
 				pushd "Assets-Production"
-				su -c "git pull"
+				su -c "git pull" vagrant
 				popd
 				fi
 				popd
@@ -112,6 +115,7 @@ Vagrant.configure("2") do |config|
 			vs_ubuntu_xenial.vm.provider "virtualbox" do |vb|
 				vb.memory = "#{base_memory}"
 				vb.cpus = "#{base_cpu_count}"
+				vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
 				vb.gui = true
 			end
 			vs_ubuntu_xenial.vm.provision "shell", inline: <<-SHELL
@@ -124,7 +128,7 @@ Vagrant.configure("2") do |config|
 				su -c "git clone #{vegastrike_assets_repository}" vagrant
 				else
 				pushd "Assets-Production"
-				su -c "git pull"
+				su -c "git pull" vagrant
 				popd
 				fi
 				popd
@@ -141,6 +145,7 @@ Vagrant.configure("2") do |config|
 			vs_ubuntu_bionic.vm.provider "virtualbox" do |vb|
 				vb.memory = "#{base_memory}"
 				vb.cpus = "#{base_cpu_count}"
+				vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
 				vb.gui = true
 			end
 			vs_ubuntu_bionic.vm.provision "shell", inline: <<-SHELL
@@ -153,7 +158,7 @@ Vagrant.configure("2") do |config|
 				su -c "git clone #{vegastrike_assets_repository}" vagrant
 				else
 				pushd "Assets-Production"
-				su -c "git pull"
+				su -c "git pull" vagrant
 				popd
 				fi
 				popd
