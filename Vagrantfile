@@ -147,6 +147,11 @@ Vagrant.configure("2") do |config|
                 vb.memory = "#{base_memory}"
                 vb.cpus = "#{base_cpu_count}"
                 vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
+                vb.customize ["modifyvm", :id, "--ostype", "Ubuntu_64"]
+                vb.customize ["modifyvm", :id, "--pae", "on"]
+                vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+                vb.customize ["modifyvm", :id, "--nestedpaging", "on"]
+                vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
                 vb.gui = true
             end
             vs_ubuntu_bionic.vm.provision "shell", inline: <<-SHELL
