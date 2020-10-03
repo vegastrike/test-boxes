@@ -17,7 +17,7 @@ base_network_lvt = "172.16.13"
 
 # VM Hardware Resource Configuration
 base_memory = 3096
-base_cpu_count = 3
+base_cpu_count = 2
 base_vram = 128
 
 # 6-month Ubuntu Release
