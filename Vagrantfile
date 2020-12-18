@@ -297,12 +297,13 @@ Vagrant.configure("2") do |config|
                 vb.gui = true
             end
             vs_debian_stretch.vm.provision "shell", privileged: true, inline: <<-SHELL
-                echo "deb http://deb.debian.org/debian stretch-backports main" | tee -a /etc/apt/sources.list
+                echo "deb http://deb.debian.org/debian stretch-backports contrib main" | tee /etc/apt/sources.list.d/stretch-backports.list
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
                 apt-get install -y "#{debian_desktop_environment}"
-                apt-get install -y -t stretch-backports virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+                apt-get install -y linux-image-amd64 linux-headers-amd64 -t stretch-backports
+                apt-get install -y virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 -t stretch-backports
             SHELL
             if clone_game_assets then
                 vs_debian_stretch.vm.provision "shell", privileged: false, inline: <<-SHELL
