@@ -38,7 +38,7 @@ system_status_xenial = true
 # Deskto Environment packages by platform
 # Package should be  meta-package that install both the Desktop Environment
 # and the Login Manager.
-debian_desktop_environment = "lubuntu-desktop"
+ubuntu_desktop_environment = "lubuntu-desktop"
 
 vegastrike_assets_repository = "https://github.com/vegastrike/Assets-Production.git"
 
@@ -70,7 +70,7 @@ Vagrant.configure("2") do |config|
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
-                apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+                apt-get install -y "#{ubuntu_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
                 pushd /home/vagrant
                 if [ ! -d "Assets-Production" ]; then
                 su -c "git clone #{vegastrike_assets_repository}" vagrant
@@ -108,7 +108,7 @@ Vagrant.configure("2") do |config|
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
-                apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+                apt-get install -y "#{ubuntu_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
                 pushd /home/vagrant
                 if [ ! -d "Assets-Production" ]; then
                 su -c "git clone #{vegastrike_assets_repository}" vagrant
@@ -146,7 +146,7 @@ Vagrant.configure("2") do |config|
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
-                apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+                apt-get install -y "#{ubuntu_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
                 pushd /home/vagrant
                 if [ ! -d "Assets-Production" ]; then
                 su -c "git clone #{vegastrike_assets_repository}" vagrant
@@ -184,7 +184,7 @@ Vagrant.configure("2") do |config|
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
-                apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+                apt-get install -y "#{ubuntu_desktop_environment}" virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
                 pushd /home/vagrant
                 if [ ! -d "Assets-Production" ]; then
                 su -c "git clone #{vegastrike_assets_repository}" vagrant
