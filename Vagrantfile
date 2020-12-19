@@ -17,8 +17,8 @@ system_status_ubuntu_latest = false
 system_status_focal = false
 system_status_bionic = false
 system_status_xenial = false
-system_status_buster = false
-system_status_stretch = true
+system_status_buster = true
+system_status_stretch = false
 
 # Select whether or not to clone the Assets-Production repo as part of provisioning
 clone_game_assets = false
@@ -256,7 +256,7 @@ Vagrant.configure("2") do |config|
                 apt-get update
                 apt-get install -y ansible python-apt
                 apt-get install -y git
-                apt-get install -y "#{debian_desktop_environment}" virtualbox-guest-additions-iso
+                apt-get install -y "#{debian_desktop_environment}"
             SHELL
             if clone_game_assets then
                 vs_debian_buster.vm.provision "shell", privileged: false, inline: <<-SHELL
