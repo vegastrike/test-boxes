@@ -17,8 +17,9 @@ system_status_ubuntu_latest = false
 system_status_focal = false
 system_status_bionic = false
 system_status_xenial = false
-system_status_buster = true
+system_status_buster = false
 system_status_stretch = false
+system_status_leap = true
 
 # Select whether or not to clone the Assets-Production repo as part of provisioning
 clone_game_assets = false
@@ -44,11 +45,15 @@ image_ubuntu_xenial = "ubuntu/xenial64"
 image_debian_buster = "debian/buster64"
 image_debian_stretch = "debian/stretch64"
 
-# Deskto Environment packages by platform
-# Package should be  meta-package that install both the Desktop Environment
+# OpenSuse Leap 15.2
+image_leap = "opensuse/Leap-15.2.x86_64"
+
+# Desktop Environment packages by platform
+# Package should be meta-package that installs both the Desktop Environment
 # and the Login Manager.
 ubuntu_desktop_environment = "lubuntu-desktop"
 debian_desktop_environment = "gnome"
+opensuse_desktop_environment = "patterns-xfce-xfce"
 
 vegastrike_assets_repository = "https://github.com/vegastrike/Assets-Production.git"
 
@@ -319,6 +324,51 @@ Vagrant.configure("2") do |config|
                 SHELL
             end
             vs_debian_stretch.vm.provision "shell", privileged: true, inline: <<-SHELL
+                reboot
+            SHELL
+        end
+    end
+
+    if system_status_leap then
+        config.vm.define "vegastrike_opensuse_leap" do | vs_opensuse_leap |
+            vs_opensuse_leap.vm.box = "#{image_leap}"
+            vs_opensuse_leap.vm.network "private_network", ip: "#{base_network_vb}.16"
+            vs_opensuse_leap.vm.hostname = "vegastrike-opensuse-leap"
+            vs_opensuse_leap.vm.boot_timeout = 900
+            vs_opensuse_leap.vm.provider "virtualbox" do |vb|
+                vb.memory = "#{base_memory}"
+                vb.cpus = "#{base_cpu_count}"
+                vb.customize ["modifyvm", :id, "--ostype", "OpenSuse_64"]
+                vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+                vb.customize ["modifyvm", :id, "--pae", "on"]
+                vb.customize ["modifyvm", :id, "--nestedpaging", "on"]
+                vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
+                vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+                vb.customize ["modifyvm", :id, "--accelerate2dvideo", "on"]
+                vb.customize ["modifyvm", :id, "--audioout", "on"]
+                vb.gui = true
+            end
+            vs_opensuse_leap.vm.provision "shell", privileged: true, inline: <<-SHELL
+                zypper --non-interactive install -y \
+                    xorg-x11 \
+                    "#{opensuse_desktop_environment}" \
+                    git \
+                    MozillaFirefox
+            SHELL
+            if clone_game_assets then
+                vs_opensuse_leap.vm.provision "shell", privileged: false, inline: <<-SHELL
+                    pushd /home/vagrant
+                    if [ ! -d "Assets-Production" ]; then
+                        git clone #{vegastrike_assets_repository}
+                    else
+                        pushd "Assets-Production"
+                        git pull
+                        popd
+                    fi
+                    popd
+                SHELL
+            end
+            vs_opensuse_leap.vm.provision "shell", privileged: true, inline: <<-SHELL
                 reboot
             SHELL
         end
