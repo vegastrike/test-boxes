@@ -20,6 +20,9 @@ system_status_xenial = false
 system_status_buster = false
 system_status_stretch = false
 system_status_leap = true
+system_status_fedora_32 = false
+system_status_fedora_33 = false
+system_status_centos_8 = false
 
 # Select whether or not to clone the Assets-Production repo as part of provisioning
 clone_game_assets = false
@@ -48,12 +51,17 @@ image_debian_stretch = "debian/stretch64"
 # OpenSuse Leap 15.2
 image_leap = "opensuse/Leap-15.2.x86_64"
 
+image_fedora_32 = "generic/fedora32"
+image_fedora_33 = "generic/fedora33"
+
+image_centos_8 = "generic/centos8"
+
 # Desktop Environment packages by platform
 # Package should be meta-package that installs both the Desktop Environment
 # and the Login Manager.
 ubuntu_desktop_environment = "lubuntu-desktop"
 debian_desktop_environment = "gnome"
-opensuse_desktop_environment = "patterns-xfce-xfce"
+# opensuse_desktop_environment = "patterns-xfce-xfce"
 
 vegastrike_assets_repository = "https://github.com/vegastrike/Assets-Production.git"
 
@@ -349,11 +357,11 @@ Vagrant.configure("2") do |config|
                 vb.gui = true
             end
             vs_opensuse_leap.vm.provision "shell", privileged: true, inline: <<-SHELL
-                zypper --non-interactive install -y \
-                    xorg-x11 \
-                    "#{opensuse_desktop_environment}" \
-                    git \
-                    MozillaFirefox
+                zypper --non-interactive refresh
+                zypper --non-interactive update
+                zypper --non-interactive install -y xorg-x11
+                zypper --non-interactive install -y -t pattern kde kde_plasma
+                zypper --non-interactive install -y git MozillaFirefox
             SHELL
             if clone_game_assets then
                 vs_opensuse_leap.vm.provision "shell", privileged: false, inline: <<-SHELL
