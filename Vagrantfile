@@ -19,9 +19,9 @@ system_status_bionic = false
 system_status_xenial = false
 system_status_buster = false
 system_status_stretch = false
-system_status_leap = true
+system_status_leap = false
 system_status_fedora_32 = false
-system_status_fedora_33 = false
+system_status_fedora_33 = true
 system_status_centos_8 = false
 
 # Select whether or not to clone the Assets-Production repo as part of provisioning
@@ -62,6 +62,7 @@ image_centos_8 = "generic/centos8"
 ubuntu_desktop_environment = "lubuntu-desktop"
 debian_desktop_environment = "gnome"
 # opensuse_desktop_environment = "patterns-xfce-xfce"
+fedora_desktop_environment = "@kde-desktop-environment"
 
 vegastrike_assets_repository = "https://github.com/vegastrike/Assets-Production.git"
 
@@ -360,9 +361,12 @@ Vagrant.configure("2") do |config|
                 zypper --non-interactive refresh
                 zypper --non-interactive update
                 zypper --non-interactive install -y xorg-x11
-                zypper --non-interactive install -y -t pattern kde kde_plasma
+                zypper --non-interactive install -y -t pattern xfce
                 zypper --non-interactive install -y git MozillaFirefox
             SHELL
+            # vs_opensuse_leap.vm.provision "shell", privileged: false, inline: <<-SHELL
+            #     startxfce4
+            # SHELL
             if clone_game_assets then
                 vs_opensuse_leap.vm.provision "shell", privileged: false, inline: <<-SHELL
                     pushd /home/vagrant
@@ -376,9 +380,107 @@ Vagrant.configure("2") do |config|
                     popd
                 SHELL
             end
-            vs_opensuse_leap.vm.provision "shell", privileged: true, inline: <<-SHELL
-                reboot
+            # vs_opensuse_leap.vm.provision "shell", privileged: true, inline: <<-SHELL
+            #     reboot
+            # SHELL
+        end
+    end
+
+    if system_status_fedora_32 then
+        config.vm.define "vegastrike_fedora_32" do | vs_fedora_32 |
+            vs_fedora_32.vm.box = "#{image_fedora_32}"
+            vs_fedora_32.vm.network "private_network", ip: "#{base_network_vb}.17"
+            vs_fedora_32.vm.hostname = "vegastrike-fedora-32"
+            vs_fedora_32.vm.boot_timeout = 900
+            vs_fedora_32.vm.provider "virtualbox" do |vb|
+                vb.memory = "#{base_memory}"
+                vb.cpus = "#{base_cpu_count}"
+                vb.customize ["modifyvm", :id, "--ostype", "Fedora_64"]
+                vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+                vb.customize ["modifyvm", :id, "--pae", "on"]
+                vb.customize ["modifyvm", :id, "--nestedpaging", "on"]
+                vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
+                vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+                vb.customize ["modifyvm", :id, "--accelerate2dvideo", "on"]
+                vb.customize ["modifyvm", :id, "--audioout", "on"]
+                vb.gui = true
+            end
+            vs_fedora_32.vm.provision "shell", privileged: true, inline: <<-SHELL
+                dnf install -y #{fedora_desktop_environment}
+                dnf install -y \
+                                git \
+                                firefox \
+                                switchdesk
             SHELL
+            vs_fedora_32.vm.provision "shell", privileged: false, inline: <<-SHELL
+                switchdesk kde
+                # startx
+            SHELL
+            if clone_game_assets then
+                vs_fedora_32.vm.provision "shell", privileged: false, inline: <<-SHELL
+                    pushd /home/vagrant
+                    if [ ! -d "Assets-Production" ]; then
+                        git clone #{vegastrike_assets_repository}
+                    else
+                        pushd "Assets-Production"
+                        git pull
+                        popd
+                    fi
+                    popd
+                SHELL
+            end
+            # vs_fedora_32.vm.provision "shell", privileged: true, inline: <<-SHELL
+            #     reboot
+            # SHELL
+        end
+    end
+
+    if system_status_fedora_33 then
+        config.vm.define "vegastrike_fedora_33" do | vs_fedora_33 |
+            vs_fedora_33.vm.box = "#{image_fedora_33}"
+            vs_fedora_33.vm.network "private_network", ip: "#{base_network_vb}.18"
+            vs_fedora_33.vm.hostname = "vegastrike-fedora-33"
+            vs_fedora_33.vm.boot_timeout = 900
+            vs_fedora_33.vm.provider "virtualbox" do |vb|
+                vb.memory = "#{base_memory}"
+                vb.cpus = "#{base_cpu_count}"
+                vb.customize ["modifyvm", :id, "--ostype", "Fedora_64"]
+                vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+                vb.customize ["modifyvm", :id, "--pae", "on"]
+                vb.customize ["modifyvm", :id, "--nestedpaging", "on"]
+                vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
+                vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+                vb.customize ["modifyvm", :id, "--accelerate2dvideo", "on"]
+                vb.customize ["modifyvm", :id, "--audioout", "on"]
+                vb.gui = true
+            end
+            vs_fedora_33.vm.provision "shell", privileged: true, inline: <<-SHELL
+                dnf install -y #{fedora_desktop_environment}
+                dnf install -y \
+                                git \
+                                firefox \
+                                switchdesk
+            SHELL
+            vs_fedora_33.vm.provision "shell", privileged: false, inline: <<-SHELL
+                switchdesk kde
+                # startx
+            SHELL
+            if clone_game_assets then
+                vs_fedora_33.vm.provision "shell", privileged: false, inline: <<-SHELL
+                    pushd /home/vagrant
+                    if [ ! -d "Assets-Production" ]; then
+                        git clone #{vegastrike_assets_repository}
+                    else
+                        pushd "Assets-Production"
+                        git pull
+                        popd
+                    fi
+                    popd
+                SHELL
+            end
+            # vs_fedora_33.vm.provision "shell", privileged: true, inline: <<-SHELL
+            #     reboot
+            # SHELL
         end
     end
 
