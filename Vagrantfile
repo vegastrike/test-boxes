@@ -507,7 +507,6 @@ Vagrant.configure("2") do |config|
             vs_centos_8.vm.provision "shell", privileged: true, inline: <<-SHELL
                 dnf update -y
                 dnf config-manager --set-enabled powertools
-                # dnf install -y #{centos_desktop_environment}
                 dnf groupinstall "KDE Plasma Workspaces" "base-x" -y
                 dnf install -y \
                                 git \
