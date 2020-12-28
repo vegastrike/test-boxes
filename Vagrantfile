@@ -21,8 +21,8 @@ system_status_buster = false
 system_status_stretch = false
 system_status_leap = false
 system_status_fedora_32 = false
-system_status_fedora_33 = true
-system_status_centos_8 = false
+system_status_fedora_33 = false
+system_status_centos_8 = true
 
 # Select whether or not to clone the Assets-Production repo as part of provisioning
 clone_game_assets = false
@@ -63,6 +63,7 @@ ubuntu_desktop_environment = "lubuntu-desktop"
 debian_desktop_environment = "gnome"
 # opensuse_desktop_environment = "patterns-xfce-xfce"
 fedora_desktop_environment = "@kde-desktop-environment"
+# centos_desktop_environment = "@kde-desktop-environment"
 
 vegastrike_assets_repository = "https://github.com/vegastrike/Assets-Production.git"
 
@@ -479,6 +480,57 @@ Vagrant.configure("2") do |config|
                 SHELL
             end
             # vs_fedora_33.vm.provision "shell", privileged: true, inline: <<-SHELL
+            #     reboot
+            # SHELL
+        end
+    end
+
+    if system_status_centos_8 then
+        config.vm.define "vegastrike_centos_8" do | vs_centos_8 |
+            vs_centos_8.vm.box = "#{image_centos_8}"
+            vs_centos_8.vm.network "private_network", ip: "#{base_network_vb}.19"
+            vs_centos_8.vm.hostname = "vegastrike-centos-8"
+            vs_centos_8.vm.boot_timeout = 900
+            vs_centos_8.vm.provider "virtualbox" do |vb|
+                vb.memory = "#{base_memory}"
+                vb.cpus = "#{base_cpu_count}"
+                vb.customize ["modifyvm", :id, "--ostype", "CentOS_64"]
+                vb.customize ["modifyvm", :id, "--hwvirtex", "on"]
+                vb.customize ["modifyvm", :id, "--pae", "on"]
+                vb.customize ["modifyvm", :id, "--nestedpaging", "on"]
+                vb.customize ["modifyvm", :id, "--vram", "#{base_vram}"]
+                vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
+                vb.customize ["modifyvm", :id, "--accelerate2dvideo", "on"]
+                vb.customize ["modifyvm", :id, "--audioout", "on"]
+                vb.gui = true
+            end
+            vs_centos_8.vm.provision "shell", privileged: true, inline: <<-SHELL
+                dnf update -y
+                dnf config-manager --set-enabled powertools
+                # dnf install -y #{centos_desktop_environment}
+                dnf groupinstall "KDE Plasma Workspaces" "base-x" -y
+                dnf install -y \
+                                git \
+                                firefox
+            SHELL
+            # vs_centos_8.vm.provision "shell", privileged: false, inline: <<-SHELL
+            #     switchdesk kde
+            #     # startx
+            # SHELL
+            if clone_game_assets then
+                vs_centos_8.vm.provision "shell", privileged: false, inline: <<-SHELL
+                    pushd /home/vagrant
+                    if [ ! -d "Assets-Production" ]; then
+                        git clone #{vegastrike_assets_repository}
+                    else
+                        pushd "Assets-Production"
+                        git pull
+                        popd
+                    fi
+                    popd
+                SHELL
+            end
+            # vs_centos_8.vm.provision "shell", privileged: true, inline: <<-SHELL
             #     reboot
             # SHELL
         end
